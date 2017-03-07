@@ -1,0 +1,45 @@
+登陆建模：http://10.9.234.7:8080/metadata/modelingLogin.html
+
+算法的存放目录：/home/netnumen/ems/ums-server/utils/vmax-metadata-manager/metadata
+
+进入spark查数据：
+/home/mr/spark/bin/beeline -u "jdbc:hive2://localhost:18000/" -n mr -p ""
+use zxvmax;
+show tables;
+select * from lte_calldrop_rate_daycell where p_date='2016-10-10' and p_provincecode=510000；
+
+进入hdfs查数据：su - hdfs        hadoop fs -ls /zxvmax/telecom/lte
+
+最终需要进入gbase的数据存放在hdfs：hadoop fs -ls /metadata/hdfs/load2gbase
+
+导入到环境数据方法：
+方法一：可以从其他环境拷贝数据：hadoop fs -cp /zxvmax/telecom/lte/netmaxl/nbi/lte_netmaxl_nbi_calldrop/p_provincecode=510000/p_date=2016-09-25/*  hdfs://10.9.234.8:9000/zxvmax/telecom/lte/netmaxl/nbi/lte_netmaxl_nbi_calldrop/p_provincecode=510000/p_date=2016-09-25
+
+方法2先get到本地，再从ftp下载到自己主机的本地，再从本地上传到需要上传环境的hdfs本地，再put到环境的hdfs：
+hadoop fs -get /zxvmax/telecom/lte/netmaxl/nbi/lte_netmaxl_nbi_cellcoverinfo/p_provincecode=510000/p_date=2016-09-25  /home/hdfs;
+hadoop fs -put /home/hdfs/p_date=2016-09-25/* /zxvmax/telecom/lte/netmaxl/nbi/lte_netmaxl_nbi_cellcoverinfo/p_provincecode=510000/p_date=2016-09-25/;
+
+如果sql加密了：解密工具：http://10.9.233.24:26180/vmaxmetadata/decode.html			
+
+取mysql的建表脚本：http://10.5.70.3/ZXVMAX/CODE/dev-metadata/vmax-metadata/vmax-metadata-db/db/mysql/schema/tab/tab_metadata.sql
+
+metadata-manager-webapp的网页：http://10.9.233.24:26180/vmaxmetadata/metaDataMonitor.html    
+           
+metadata-manager-webapp的最新版网页：http://10.9.233.24:26180/vmaxmetadata/monitoring.html
+
+metadata-manager-webapp的建模页面：http://10.9.233.24:26180/vmaxmetadata/metaDataModeling.html 
+			
+把数据公告牌的灯点亮：http://10.9.233.24:8889/metadataTest/modifylight?id=3&tablename=lte_netmaxl_nbi_neighbormiss&state=1
+
+指定虚拟任务运行：http://10.9.xx.xx:8889/metadataTest/onevirtualtask?virtualTaskName=lte_neighbor_task&day=2016-05-27&setInputLights=true
+
+指定任务运行：http://10.9.xx.xx:8889/metadataTest/onetask?algorithmName=lte_calldrop_reason_hourcell&day=2016-05-27&setInputLights=true
+
+在内存中查看任务信息：
+http://10.9.233.24:8889/metadataManage/taskmentaldetail?taskName=lte_subject_coverkpi_grid_day_gbase_file
+在内存中查看表和汇总表信息：
+http://10.9.233.24:8889/metadataManage/tablementaldetail?tableName=cdma_subject_area_callproblem_1x_day&tableType=spark
+
+热补丁：
+http://10.9.x.x:8889/metadataTest/patches?path=/home/netnumen/ems/ums-server/utils/vmax-metadata-manager/metadata/lte/feature/calldrop/algorithm/lte_calldrop_rate_daycell.xml,/home/netnumen/ems/ums-server/utils/vmax-metadata-manager/metadata/lte/feature/calldrop/algorithm/lte_calldrop_rate_daycell_gbase.xml,/home/netnumen/ems/ums-server/utils/vmax-metadata-manager/metadata/cdma/feature/poorqualitycall
+
